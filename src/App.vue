@@ -6,6 +6,7 @@
       <nav>
         <router-link to="/registration"> Регистрация </router-link>
         <router-link to="/login"> Вход </router-link>
+        <router-link to="/registerClient"> Клиенти </router-link>
       </nav>
     </div>
   </header>
