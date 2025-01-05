@@ -37,8 +37,8 @@ export default {
   },
   created() {
     // Проверка при зареждане на компонента за наличие на токен и логин
-    const storedToken = localStorage.getItem('jwtToken')
-    if (storedToken) {
+    const currentUser = localStorage.getItem('currentUser')
+    if (currentUser) {
       this.isLoggedIn = true
     }
   },
@@ -53,11 +53,22 @@ export default {
 
         // Проверка за успешен вход
         if (response.status === 200) {
-          // Задайте JWT токена в локалното съхранение
-          localStorage.setItem('jwtToken', response.data.token)
-          // Променете стойността на isLoggedIn на true
+          localStorage.setItem('currentUser', response.data.user)
+          localStorage.setItem('currentUserIsAdmin', response.data.role === 'admin')
+
+          window.dispatchEvent(
+            new CustomEvent('current-user-changed', {
+              detail: {
+                storage: {
+                  user: localStorage.getItem('currentUser'),
+                  isAdmin: localStorage.getItem('currentUserIsAdmin'),
+                },
+              },
+            }),
+          )
+
           this.isLoggedIn = true
-          // Изпишете съобщението след успешен вход
+
           this.loggedInMessage = response.data.message
         }
       } catch (error) {
@@ -74,7 +85,18 @@ export default {
 
     logoutUser() {
       // Тук добавете логика за изход - например, изчистване на токена и връщане на статуса на "не логнат"
-      localStorage.removeItem('jwtToken')
+      localStorage.removeItem('currentUser')
+      localStorage.removeItem('currentUserIsAdmin')
+      window.dispatchEvent(
+        new CustomEvent('current-user-changed', {
+          detail: {
+            storage: {
+              user: localStorage.getItem('currentUser'),
+              isAdmin: localStorage.getItem('currentUserIsAdmin'),
+            },
+          },
+        }),
+      )
       this.isLoggedIn = false
       this.loggedInMessage = 'Излязохте успешно' // Можете да изпишете подходящо съобщение
     },

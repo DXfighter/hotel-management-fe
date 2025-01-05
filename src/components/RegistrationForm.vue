@@ -11,7 +11,6 @@
     <input type="text" v-model="phone" placeholder="Телефон" />
     <input type="email" v-model="email" placeholder="Емаил" />
     <input type="date" v-model="hireDate" placeholder="Дата на назначаване" />
-    <input type="text" v-model="role" placeholder="Роля" />
 
     <!-- Бутон за регистрация -->
     <button type="submit">Регистрация</button>
@@ -33,7 +32,6 @@ export default {
       phone: '',
       email: '',
       hireDate: '',
-      role: '',
     }
   },
   methods: {
@@ -49,7 +47,6 @@ export default {
           phone: this.phone,
           email: this.email,
           hireDate: this.hireDate,
-          role: this.role,
         })
 
         // Обработка на успешната регистрация

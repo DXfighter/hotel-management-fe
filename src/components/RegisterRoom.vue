@@ -1,28 +1,28 @@
 <template>
   <div>
-    <h1>Register Client</h1>
-    <form @submit.prevent="registerCl">
+    <h1>Register Room</h1>
+    <form @submit.prevent="registerRoom">
       <label>
-        Име:
-        <input type="text" v-model="name" />
+        Номер:
+        <input type="text" pattern="[0-9]+" v-model="number" />
       </label>
       <label>
-        Презиме:
-        <input type="text" v-model="lastName" />
+        Капацитет:
+        <input type="number" v-model="capacity" />
       </label>
       <label>
-        Телефон:
-        <input type="text" pattern="[0-9]{10}" v-model="phoneNumber" />
+        Тип:
+        <input type="text" v-model="type" />
       </label>
       <label>
-        Възрастен:
-        <input type="checkbox" v-model="isAdult" />
+        Цена за възрастен:
+        <input type="number" v-model="adultPrice" />
       </label>
       <label>
-        Е-mail:
-        <input type="email" v-model="email" />
+        Цена за дете:
+        <input type="number" v-model="childPrice" />
       </label>
-      <button type="submit">Регистрация</button>
+      <button type="submit">Създаване на стая</button>
     </form>
     <p v-if="error">{{ error }}</p>
   </div>
@@ -34,23 +34,23 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      name: '',
-      lastName: '',
-      phoneNumber: '',
-      email: '',
-      isAdult: false,
+      number: '',
+      capacity: 0,
+      type: '',
+      adultPrice: 0,
+      childPrice: 0,
       error: '',
     }
   },
   methods: {
-    async registerCl() {
+    async registerRoom() {
       try {
-        const response = await axios.post('http://localhost:3000/api/registerClient', {
-          name: this.name,
-          lastName: this.lastName,
-          phoneNumber: this.phoneNumber,
-          email: this.email,
-          isAdult: this.isAdult,
+        const response = await axios.post('http://localhost:3000/api/registerRoom', {
+          number: this.number,
+          capacity: this.capacity,
+          type: this.type,
+          priceAdult: this.adultPrice,
+          priceChild: this.childPrice,
         })
         console.log(response.data.message)
       } catch (error) {
