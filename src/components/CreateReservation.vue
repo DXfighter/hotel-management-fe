@@ -3,14 +3,6 @@
     <h1>Create Reservation</h1>
     <form @submit.prevent="createReservation">
       <label>
-        Стая:
-        <select v-model="roomId">
-          <option v-for="room in rooms" :key="room.id" :value="room.id">
-            {{ room.number }}
-          </option>
-        </select>
-      </label>
-      <label>
         Клиенти:
         <select v-model="clientIds" multiple>
           <option v-for="client in clients" :key="client.id" :value="client.id">
@@ -25,6 +17,15 @@
       <label>
         Дата на освобождаване:
         <input type="date" v-model="endDate" />
+      </label>
+      <label>
+        Стая:
+        <select v-model="roomId" :disabled="rooms.length === 0">
+          <option disabled selected value="">Select room</option>
+          <option v-for="room in rooms" :key="room.id" :value="room.id">
+            {{ room.number }}
+          </option>
+        </select>
       </label>
       <label>
         Включена закуска:
@@ -47,7 +48,6 @@ export default {
   data() {
     return {
       roomId: '',
-      userId: '',
       clientIds: [],
       startDate: '',
       endDate: '',
@@ -59,6 +59,30 @@ export default {
     }
   },
   methods: {
+    async fetchAvailableRooms() {
+      try {
+        if (this.startDate && this.endDate) {
+          const response = await axios.post('http://localhost:3000/api/getAvailableRooms', {
+            startDate: this.startDate,
+            endDate: this.endDate,
+          })
+          this.rooms = response.data
+        }
+      } catch (error) {
+        console.error(error)
+        this.error = 'Грешка при получаване на наличните стаи'
+      }
+    },
+    // Fetch clients before the component is mounted
+    async fetchCl() {
+      try {
+        const clientsResponse = await axios.post('http://localhost:3000/api/getClients')
+        this.clients = clientsResponse.data
+      } catch (error) {
+        console.error(error)
+        this.error = 'Грешка при получаване на клиентите'
+      }
+    },
     async createReservation() {
       try {
         const response = await axios.post('http://localhost:3000/api/createReservation', {
@@ -70,28 +94,46 @@ export default {
           includeBreakfast: this.includeBreakfast,
           allInclusive: this.allInclusive,
         })
-        console.log(response.data.message)
+        alert('Резервацията е успешно създадена!')
+        console.log(response.data)
+        this.resetForm()
       } catch (error) {
         console.error(error)
-        this.error = 'Грешка при регистрация'
+        this.error = 'Регистрацият е неуспешна,моля проверете въведените данни'
       }
+    },
+    resetForm() {
+      this.roomId = ''
+      this.clientIds = []
+      this.startDate = ''
+      this.endDate = ''
+      this.includeBreakfast = false
+      this.allInclusive = false
+      this.error = ''
+      this.rooms = []
+    },
+  },
+  watch: {
+    startDate() {
+      this.fetchAvailableRooms()
+    },
+    endDate() {
+      this.fetchAvailableRooms()
     },
   },
   async beforeMount() {
-    const rooms = await axios.post('http://localhost:3000/api/getRooms')
-    const clients = await axios.post('http://localhost:3000/api/getClients')
-
-    this.rooms = rooms.data
-    this.clients = clients.data
+    await this.fetchCl()
   },
 }
 </script>
+
 <style scoped>
 form {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 12px;
   padding: 20px;
   border: 2px solid #ccc;
   border-radius: 10px;
@@ -130,5 +172,15 @@ button {
 
 button:hover {
   background-color: #45a049;
+}
+
+label:has(select[multiple]) {
+  display: flex;
+  flex-direction: column;
+}
+
+select[multiple] {
+  min-width: 180px;
+  min-height: 72px;
 }
 </style>

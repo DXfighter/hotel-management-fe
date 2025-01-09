@@ -1,28 +1,34 @@
 <template>
   <div>
-    <h1>Register Room</h1>
-    <form @submit.prevent="registerRoom">
+    <h1>Edit Room</h1>
+    <select @change="getRoom">
+      <option selected disabled>Select room</option>
+      <option v-for="room in rooms" :key="room.number" :value="room.number">
+        {{ room.number }}
+      </option>
+    </select>
+    <form @submit.prevent="editRoom">
       <label>
         Номер:
-        <input type="number" pattern="[0-9]+" v-model="number" />
+        <input type="number" v-model="room.number" disabled />
       </label>
       <label>
         Капацитет:
-        <input type="number" v-model="capacity" />
+        <input type="number" v-model="room.capacity" />
       </label>
       <label>
         Тип:
-        <input type="text" v-model="type" />
+        <input type="text" v-model="room.type" />
       </label>
       <label>
         Цена за възрастен:
-        <input type="number" v-model="adultPrice" />
+        <input type="number" v-model="room.priceAdult" />
       </label>
       <label>
         Цена за дете:
-        <input type="number" v-model="childPrice" />
+        <input type="number" v-model="room.priceChild" />
       </label>
-      <button type="submit">Създаване на стая</button>
+      <button type="submit" :disabled="!room.number">Редактиране на стая</button>
     </form>
     <p v-if="error">{{ error }}</p>
   </div>
@@ -34,23 +40,27 @@ import axios from 'axios'
 export default {
   data() {
     return {
-      number: '',
-      capacity: 0,
-      type: '',
-      adultPrice: 0,
-      childPrice: 0,
+      room: {
+        number: '',
+        capacity: '',
+        type: '',
+        priceAdult: '',
+        priceChild: '',
+      },
       error: '',
+      rooms: [],
     }
   },
   methods: {
-    async registerRoom() {
+    async editRoom() {
       try {
-        const response = await axios.post('http://localhost:3000/api/registerRoom', {
-          number: this.number,
-          capacity: this.capacity,
-          type: this.type,
-          priceAdult: this.adultPrice,
-          priceChild: this.childPrice,
+        const { number, capacity, type, priceAdult, priceChild } = this.room
+        const response = await axios.post('http://localhost:3000/api/editRoom', {
+          number,
+          capacity,
+          type,
+          priceAdult,
+          priceChild,
         })
         console.log(response.data.message)
       } catch (error) {
@@ -58,6 +68,15 @@ export default {
         this.error = 'Грешка при регистрация'
       }
     },
+    async getRoom(e) {
+      const number = e.target.value
+      this.room = this.rooms.find((room) => room.number === number)
+    },
+  },
+  async beforeMount() {
+    const rooms = await axios.post('http://localhost:3000/api/getRooms')
+
+    this.rooms = rooms.data
   },
 }
 </script>
@@ -107,10 +126,15 @@ button {
   border: none;
   border-radius: 5px;
   font-size: 16px;
-  cursor: pointer;
+  opacity: 0.5;
 }
 
-button:hover {
+button:not(:disabled) {
+  cursor: pointer;
+  opacity: 1;
+}
+
+button:not(:disabled):hover {
   background-color: #45a049;
 }
 </style>

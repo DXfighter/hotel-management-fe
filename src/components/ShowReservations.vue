@@ -29,10 +29,10 @@
             {{ new Date(res.endDate).toISOString().split('T')[0] }}
           </td>
           <td>
-            {{ res.includesBreakfast }}
+            {{ res.includeBreakfast ? 'Yes' : 'No' }}
           </td>
           <td>
-            {{ res.allInclusive }}
+            {{ res.allInclusive ? 'Yes' : 'No' }}
           </td>
           <td>
             {{ res.price }}

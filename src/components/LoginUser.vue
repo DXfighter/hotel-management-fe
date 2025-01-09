@@ -1,23 +1,18 @@
 <template>
   <div>
-    <!-- Форма за вход -->
     <form @submit.prevent="loginUser" v-if="!isLoggedIn">
       <input v-model="username" type="text" placeholder="Потребителско име" />
       <input v-model="password" type="password" placeholder="Парола" />
       <button type="submit">Вход</button>
       <p>{{ errorMessage }}</p>
-      <!-- Извеждане на грешката -->
     </form>
 
-    <!-- Форма за изход -->
     <button @click="logoutUser" v-if="isLoggedIn">Изход</button>
 
-    <!-- Изписване на съобщение след успешен вход -->
     <div v-if="loggedInMessage">
       {{ loggedInMessage }}
     </div>
 
-    <!-- Състояние на логина -->
     <div>Статус: {{ isLoggedIn ? 'Логнат' : 'Не логнат' }}</div>
   </div>
 </template>
@@ -36,14 +31,12 @@ export default {
     }
   },
   created() {
-    // Проверка при зареждане на компонента за наличие на токен и логин
     const currentUser = localStorage.getItem('currentUser')
     if (currentUser) {
       this.isLoggedIn = true
     }
   },
   methods: {
-    // Конфигурирайте пътя за вход във вашия Vue.js компонент
     async loginUser() {
       try {
         const response = await axios.post('http://localhost:3000/auth/login', {
@@ -51,7 +44,6 @@ export default {
           password: this.password,
         })
 
-        // Проверка за успешен вход
         if (response.status === 200) {
           localStorage.setItem('currentUser', response.data.user)
           localStorage.setItem('currentUserIsAdmin', response.data.role === 'admin')
@@ -72,19 +64,15 @@ export default {
           this.loggedInMessage = response.data.message
         }
       } catch (error) {
-        // Обработка на грешката
         if (error.response.status === 401) {
-          // Грешно потребителско име или парола
           this.errorMessage = 'Грешно потребителско име или парола'
         } else {
-          // Други грешки
           this.errorMessage = 'Възникна грешка при вход'
         }
       }
     },
 
     logoutUser() {
-      // Тук добавете логика за изход - например, изчистване на токена и връщане на статуса на "не логнат"
       localStorage.removeItem('currentUser')
       localStorage.removeItem('currentUserIsAdmin')
       window.dispatchEvent(
@@ -98,7 +86,7 @@ export default {
         }),
       )
       this.isLoggedIn = false
-      this.loggedInMessage = 'Излязохте успешно' // Можете да изпишете подходящо съобщение
+      this.loggedInMessage = 'Излязохте успешно'
     },
   },
 }
