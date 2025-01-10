@@ -7,7 +7,7 @@ import RegisterRoom from '../components/RegisterRoom.vue'
 import EditRoom from '../components/EditRoom.vue'
 import CreateReservation from '../components/CreateReservation.vue'
 import ShowReservations from '../components/ShowReservations.vue'
-import ShowClents from '../components/ShowClients.vue'
+import ShowClients from '../components/ShowClients.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -20,7 +20,7 @@ const router = createRouter({
     { path: '/editRoom', component: EditRoom },
     { path: '/createReservation', component: CreateReservation },
     { path: '/showReservations', component: ShowReservations },
-    { path: '/showClients', component: ShowClents },
+    { path: '/showClients', component: ShowClients },
   ],
 })
 

@@ -2,12 +2,11 @@
   <header>
     <div class="wrapper">
       <nav>
-        <router-link to="/registration" v-if="isLoggedIn && isAdmin"> Регистрация </router-link>
-        <router-link to="/editUser" v-if="isLoggedIn && isAdmin"> Потребители </router-link>
+        <router-link to="/editUser" v-if="isAdmin"> Потребители </router-link>
         <router-link to="/login"> Вход </router-link>
         <router-link to="/registerClient" v-if="isLoggedIn"> Клиенти </router-link>
         <router-link to="/registerRoom" v-if="isLoggedIn && isAdmin"> Стаи </router-link>
-        <router-link to="/editRoom" v-if="isLoggedIn && isAdmin"> Редактиране на стаи </router-link>
+        <router-link to="/editRoom" v-if="isAdmin"> Редактиране на стаи </router-link>
         <router-link to="/createReservation" v-if="isLoggedIn"> Добави Резервация </router-link>
         <router-link to="/showReservations" v-if="isLoggedIn"> Резервации </router-link>
         <router-link to="/showClients" v-if="isLoggedIn"> Клиенти </router-link>
@@ -32,7 +31,7 @@ export default {
     })
 
     const currentUser = localStorage.getItem('currentUser')
-    const currentUserIsAdmin = localStorage.getItem('currentUserIsAdmin')
+    const currentUserIsAdmin = localStorage.getItem('currentUserIsAdmin') === 'true'
     if (currentUser) {
       this.isLoggedIn = true
       this.isAdmin = currentUserIsAdmin

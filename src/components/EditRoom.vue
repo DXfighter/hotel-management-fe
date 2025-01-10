@@ -30,6 +30,15 @@
       </label>
       <button type="submit" :disabled="!room.number">Редактиране на стая</button>
     </form>
+    <div>
+      <button
+        @click="deleteRoom"
+        :disabled="!room.number"
+        style="position: fixed; bottom: 10%; left: 50%; transform: translateX(-50%)"
+      >
+        Изтрий стая
+      </button>
+    </div>
     <p v-if="error">{{ error }}</p>
   </div>
 </template>
@@ -68,18 +77,41 @@ export default {
         this.error = 'Грешка при регистрация'
       }
     },
+    async deleteRoom() {
+      try {
+        const response = await axios.post('http://localhost:3000/api/deleteRoom', {
+          roomNumber: this.room.number,
+          id: this.room.id,
+        })
+        if (response.status === 200) {
+          console.log('Стаята е намерена успешно')
+        }
+        window.location.reload()
+
+        console.log(response.data.message)
+        this.room = {}
+        this.error = ''
+        await this.fetchRooms()
+      } catch (error) {
+        console.error(error)
+        this.error = 'Грешка при изтриване на стаята'
+      }
+    },
     async getRoom(e) {
       const number = e.target.value
       this.room = this.rooms.find((room) => room.number === number)
     },
+    async fetchRooms() {
+      const rooms = await axios.post('http://localhost:3000/api/getRooms')
+      this.rooms = rooms.data
+    },
   },
   async beforeMount() {
-    const rooms = await axios.post('http://localhost:3000/api/getRooms')
-
-    this.rooms = rooms.data
+    await this.fetchRooms()
   },
 }
 </script>
+
 <style scoped>
 form {
   display: flex;
